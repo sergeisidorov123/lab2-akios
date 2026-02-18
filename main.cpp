@@ -43,7 +43,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int 
         "Grid Application",
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
         CW_USEDEFAULT, CW_USEDEFAULT,
-        WINDOW_WIDTH, WINDOW_HEIGHT,
+        WINDOW_WIDTH_CONFIG, WINDOW_HEIGHT_CONFIG,
         NULL, NULL, hInstance, NULL
     );
 

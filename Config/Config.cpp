@@ -8,6 +8,8 @@
 const char* CONFIG_FILE = "config.txt";
 const int MIN_CELL_SIZE = 10;
 const int DEFAULT_CELL_SIZE = 20;
+int WINDOW_WIDTH_CONFIG = 320;
+int WINDOW_HEIGHT_CONFIG = 240;
 
 // Загрузка конфига с построчным прочтением параметров
 void LoadConfig() {
@@ -23,6 +25,12 @@ void LoadConfig() {
         if (key == "CELL_SIZE:") {
             iss >> CELL_SIZE;
             if (CELL_SIZE < MIN_CELL_SIZE) CELL_SIZE = DEFAULT_CELL_SIZE;
+        }
+        else if (key == "WINDOW_WIDTH:") {
+            iss >> WINDOW_WIDTH_CONFIG;
+        }
+        else if (key == "WINDOW_HEIGHT:") {
+            iss >> WINDOW_HEIGHT_CONFIG;
         }
         else if (key == "BACKGROUND_COLOR:") {
             int r, g, b;
