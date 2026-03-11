@@ -51,9 +51,8 @@ void RunBenchmark() {
 }
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int CmdShow) {
-
+    LoadConfig();
     bool runBench = false;
-
     int argc = __argc;
     char** argv = __argv;
     for (int i = 1; i < argc; ++i) {
@@ -93,14 +92,13 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int 
             method = "WinAPI";
             break;
     }
+
     AllocConsole();
     freopen("CONOUT$", "w", stdout);
     std::cout << "Method:" << method << std::endl;
     std::cout << "Cell size:" << CELL_SIZE << std::endl;
 
 
-    // Загружаем конфиг
-    LoadConfig();
 
     if (runBench) {
         AllocConsole();

@@ -95,7 +95,8 @@ void SaveConfigMapping(HWND hwnd) {
     SaveData(windowRect, file);
     std::string data = file.str();
 
-    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_READ | GENERIC_WRITE, 0,
+        NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     DWORD fileSize = (DWORD)data.size();
     SetFilePointer(hFile, fileSize, NULL, FILE_BEGIN);
     SetEndOfFile(hFile);
@@ -212,7 +213,8 @@ void SaveConfigWinAPI(HWND hwnd) {
     SaveData(windowRect, file);
     std::string data = file.str();
 
-    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_WRITE, 0,
+        NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile != INVALID_HANDLE_VALUE) {
         DWORD bytesWritten;
         WriteFile(hFile, data.c_str(), (DWORD)data.size(), &bytesWritten, NULL);
@@ -239,3 +241,5 @@ void SaveConfig(HWND hwnd) {
         case WinAPI:  SaveConfigWinAPI(hwnd);  break;
     }
 }
+
+
