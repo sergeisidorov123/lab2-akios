@@ -9,7 +9,7 @@ extern const int DEFAULT_CELL_SIZE;
 extern int WINDOW_WIDTH_CONFIG;
 extern int WINDOW_HEIGHT_CONFIG;
 
-void LoadConfig();
-void SaveConfig(HWND hwnd);
+void LoadConfigStream();
+void SaveConfigStream(HWND hwnd);
 
 #endif

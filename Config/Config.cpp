@@ -11,8 +11,12 @@ const int DEFAULT_CELL_SIZE = 20;
 int WINDOW_WIDTH_CONFIG = 320;
 int WINDOW_HEIGHT_CONFIG = 240;
 
-// Загрузка конфига с построчным прочтением параметров
-void LoadConfig() {
+
+// 3 Вариант
+
+
+// Загрузка конфига при помощи потоков ввода-вывода
+void LoadConfigStream() {
     std::ifstream file(CONFIG_FILE);
     if (!file.is_open()) return;
 
@@ -45,8 +49,8 @@ void LoadConfig() {
 }
 
 
-// Сохранение конфига
-void SaveConfig(HWND hwnd) {
+// Сохранение конфига при помощи потоков ввода-вывода
+void SaveConfigStream(HWND hwnd) {
     RECT windowRect;
     GetWindowRect(hwnd, &windowRect);
 
@@ -67,3 +71,4 @@ void SaveConfig(HWND hwnd) {
 
     file.close();
 }
+
