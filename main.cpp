@@ -10,7 +10,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int CmdShow) {
     // Загружаем конфиг
-    LoadConfig();
+    LoadConfigStream();
 
     // Обработка аргументов командной строки
     int argc = __argc;
