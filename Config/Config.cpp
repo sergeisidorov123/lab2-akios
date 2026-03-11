@@ -6,7 +6,8 @@
 #include <sstream>
 #include <windows.h>
 
-const char* CONFIG_FILE = "config.txt";
+std::string CURRENT_FILE = "config.txt";
+const char* BENCH_FILE = "bench_test.txt";
 const int MIN_CELL_SIZE = 10;
 const int DEFAULT_CELL_SIZE = 20;
 const int MAX_DEFAULT_SIZE = 100;
@@ -60,7 +61,7 @@ void SaveData(RECT windowRect, std::ostream& file) {
 
 // Загрузка конфига при помощи отображения файлов на память
 void LoadConfigMapping() {
-    HANDLE hFile = CreateFileA(CONFIG_FILE, GENERIC_READ, FILE_SHARE_READ, NULL,
+    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) return;
 
@@ -94,7 +95,7 @@ void SaveConfigMapping(HWND hwnd) {
     SaveData(windowRect, file);
     std::string data = file.str();
 
-    HANDLE hFile = CreateFileA(CONFIG_FILE, GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     DWORD fileSize = (DWORD)data.size();
     SetFilePointer(hFile, fileSize, NULL, FILE_BEGIN);
     SetEndOfFile(hFile);
@@ -118,7 +119,7 @@ void SaveConfigMapping(HWND hwnd) {
 
 // Загрузка конфига при помощи файловых переменных
 void LoadConfigFile() {
-    FILE* file = fopen(CONFIG_FILE, "rb");
+    FILE* file = fopen(CURRENT_FILE.c_str(), "rb");
     if (!file) return;
 
     fseek(file, 0, SEEK_END);
@@ -145,7 +146,7 @@ void SaveConfigFile(HWND hwnd) {
     SaveData(windowRect, file);
     std::string data = file.str();
 
-    FILE* save = fopen(CONFIG_FILE, "wb");
+    FILE* save = fopen(CURRENT_FILE.c_str(), "wb");
     if (!save) return;
 
     fwrite(data.c_str(), sizeof(char), data.size(), save);
@@ -158,7 +159,7 @@ void SaveConfigFile(HWND hwnd) {
 
 // Загрузка конфига при помощи потоков ввода-вывода
 void LoadConfigStream() {
-    std::ifstream file(CONFIG_FILE);
+    std::ifstream file(CURRENT_FILE.c_str());
     if (!file.is_open()) return;
 
     ParseData(file);
@@ -171,7 +172,7 @@ void SaveConfigStream(HWND hwnd) {
     RECT windowRect;
     GetWindowRect(hwnd, &windowRect);
 
-    std::ofstream file(CONFIG_FILE);
+    std::ofstream file(CURRENT_FILE.c_str());
     if (!file.is_open()) return;
 
     SaveData(windowRect, file);
@@ -183,7 +184,7 @@ void SaveConfigStream(HWND hwnd) {
 
 // Загрузка конфига с помощью WinAPI
 void LoadConfigWinAPI() {
-    HANDLE hFile = CreateFileA(CONFIG_FILE, GENERIC_READ, FILE_SHARE_READ, NULL,
+    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL,
        OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile == INVALID_HANDLE_VALUE) return;
 
@@ -211,7 +212,7 @@ void SaveConfigWinAPI(HWND hwnd) {
     SaveData(windowRect, file);
     std::string data = file.str();
 
-    HANDLE hFile = CreateFileA(CONFIG_FILE, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
     if (hFile != INVALID_HANDLE_VALUE) {
         DWORD bytesWritten;
         WriteFile(hFile, data.c_str(), (DWORD)data.size(), &bytesWritten, NULL);

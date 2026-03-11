@@ -2,8 +2,9 @@
 #define CONFIG_H
 
 #include <windows.h>
+#include <string>
 
-extern const char* CONFIG_FILE;
+extern std::string CURRENT_FILE;
 extern const int MIN_CELL_SIZE;
 extern const int DEFAULT_CELL_SIZE;
 extern int WINDOW_WIDTH_CONFIG;
@@ -19,6 +20,13 @@ extern ConfigMethod currentMethod;
 
 void LoadConfig();
 void SaveConfig(HWND hwnd);
-
+void LoadConfigMapping();
+void SaveConfigMapping(HWND hwnd);
+void LoadConfigStream();
+void SaveConfigStream(HWND hwnd);
+void LoadConfigFile();
+void SaveConfigFile(HWND hwnd);
+void LoadConfigWinAPI();
+void SaveConfigWinAPI(HWND hwnd);
 
 #endif
