@@ -112,6 +112,47 @@ void SaveConfigMapping(HWND hwnd) {
     CloseHandle(hFile);
 }
 
+
+// 2 Вариант
+
+
+// Загрузка конфига при помощи файловых переменных
+void LoadConfigFile() {
+    FILE* file = fopen(CONFIG_FILE, "rb");
+    if (!file) return;
+
+    fseek(file, 0, SEEK_END);
+    long fileSize = ftell(file);
+    fseek(file, 0, SEEK_SET);
+
+    if (fileSize > 0) {
+        std::string buffer(fileSize, '\0');
+        fread(&buffer[0], 1, fileSize, file);
+
+        std::istringstream file(buffer);
+        ParseData(file);
+    }
+
+    fclose(file);
+}
+
+// Чтение конфига при помощи файловых переменных
+void SaveConfigFile(HWND hwnd) {
+    RECT windowRect;
+    GetWindowRect(hwnd, &windowRect);
+
+    std::ostringstream file;
+    SaveData(windowRect, file);
+    std::string data = file.str();
+
+    FILE* save = fopen(CONFIG_FILE, "wb");
+    if (!save) return;
+
+    fwrite(data.c_str(), sizeof(char), data.size(), save);
+
+    fclose(save);
+}
+
 // 3 Вариант
 
 

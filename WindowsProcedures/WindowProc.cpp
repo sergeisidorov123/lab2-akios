@@ -140,7 +140,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         // Обработка выхода
         case WM_DESTROY:
             // Сохраняем конфигурацию перед выходом
-            SaveConfigMapping(hwnd);
+            SaveConfigStream(hwnd);
             PostQuitMessage(0);
             return 0;
 

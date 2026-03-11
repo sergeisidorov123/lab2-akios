@@ -13,5 +13,7 @@ void LoadConfigStream();
 void SaveConfigStream(HWND hwnd);
 void LoadConfigMapping();
 void SaveConfigMapping(HWND hwnd);
+void LoadConfigFile();
+void SaveConfigFile(HWND hwnd);
 
 #endif
