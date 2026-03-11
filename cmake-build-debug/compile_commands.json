@@ -1,0 +1,32 @@
+[
+{
+  "directory": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug",
+  "command": "C:\\Users\\sergei\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\g++.exe -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\lab2.dir\\main.cpp.obj -c C:\\Users\\sergei\\CLionProjects\\lab2-akios\\main.cpp",
+  "file": "C:/Users/sergei/CLionProjects/lab2-akios/main.cpp",
+  "output": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug/CMakeFiles/lab2.dir/main.cpp.obj"
+},
+{
+  "directory": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug",
+  "command": "C:\\Users\\sergei\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\g++.exe -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\lab2.dir\\grid\\Grid.cpp.obj -c C:\\Users\\sergei\\CLionProjects\\lab2-akios\\grid\\Grid.cpp",
+  "file": "C:/Users/sergei/CLionProjects/lab2-akios/grid/Grid.cpp",
+  "output": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug/CMakeFiles/lab2.dir/grid/Grid.cpp.obj"
+},
+{
+  "directory": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug",
+  "command": "C:\\Users\\sergei\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\g++.exe -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\lab2.dir\\Colors\\Colors.cpp.obj -c C:\\Users\\sergei\\CLionProjects\\lab2-akios\\Colors\\Colors.cpp",
+  "file": "C:/Users/sergei/CLionProjects/lab2-akios/Colors/Colors.cpp",
+  "output": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug/CMakeFiles/lab2.dir/Colors/Colors.cpp.obj"
+},
+{
+  "directory": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug",
+  "command": "C:\\Users\\sergei\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\g++.exe -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\lab2.dir\\Config\\Config.cpp.obj -c C:\\Users\\sergei\\CLionProjects\\lab2-akios\\Config\\Config.cpp",
+  "file": "C:/Users/sergei/CLionProjects/lab2-akios/Config/Config.cpp",
+  "output": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug/CMakeFiles/lab2.dir/Config/Config.cpp.obj"
+},
+{
+  "directory": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug",
+  "command": "C:\\Users\\sergei\\AppData\\Local\\Programs\\CLion\\bin\\mingw\\bin\\g++.exe -g -std=gnu++20 -fdiagnostics-color=always -o CMakeFiles\\lab2.dir\\WindowsProcedures\\WindowProc.cpp.obj -c C:\\Users\\sergei\\CLionProjects\\lab2-akios\\WindowsProcedures\\WindowProc.cpp",
+  "file": "C:/Users/sergei/CLionProjects/lab2-akios/WindowsProcedures/WindowProc.cpp",
+  "output": "C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug/CMakeFiles/lab2.dir/WindowsProcedures/WindowProc.cpp.obj"
+}
+]

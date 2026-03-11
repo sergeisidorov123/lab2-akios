@@ -1,0 +1,3 @@
+C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug/CMakeFiles/lab2.dir
+C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug/CMakeFiles/edit_cache.dir
+C:/Users/sergei/CLionProjects/lab2-akios/cmake-build-debug/CMakeFiles/rebuild_cache.dir
