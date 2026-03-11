@@ -1,3 +1,6 @@
+#include <iostream>
+#include <ostream>
+#include <string>
 #include <windows.h>
 #include "Grid/Grid.h"
 #include "Config/Config.h"
@@ -11,17 +14,47 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int CmdShow) {
     // Загружаем конфиг
-    LoadConfigFile();
+    LoadConfig();
 
-    // Обработка аргументов командной строки
     int argc = __argc;
     char** argv = __argv;
-    if (argc > 1) {
-        int cellSize = atoi(argv[1]);
-        if (cellSize >= MIN_CELL_SIZE & cellSize <= MAX_CELL_SIZE) {
-            CELL_SIZE = cellSize;
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+
+        if (arg == "-m" && i + 1 < argc) {
+            int m = atoi(argv[i + 1]);
+            if (m >= 1 && m <= 4) {
+                currentMethod = (ConfigMethod)m;
+            }
+            i++;
+        }
+        else if (arg == "-s" && i + 1 < argc) {
+            int s = atoi(argv[i + 1]);
+            if (s >= MIN_CELL_SIZE && s <= MAX_CELL_SIZE) {
+                CELL_SIZE = s;
+            }
+            i++;
         }
     }
+    std::string method = "";
+    switch (currentMethod) {
+        case MAPPING:
+            method =  "File Mapping";
+            break;
+        case CFILE:
+            method =  "FILE";
+            break;
+        case STREAM:
+            method = "STREAM";
+            break;
+        case WinAPI:
+            method = "WinAPI";
+            break;
+    }
+    AllocConsole();
+    freopen("CONOUT$", "w", stdout);
+    std::cout << "Method:" << method << std::endl;
+    std::cout << "Cell size:" << CELL_SIZE << std::endl;
 
     // Регистрация класса окна
     WNDCLASSA wc = {0};

@@ -179,3 +179,62 @@ void SaveConfigStream(HWND hwnd) {
     file.close();
 }
 
+// 4 Вариант
+
+// Загрузка конфига с помощью WinAPI
+void LoadConfigWinAPI() {
+    HANDLE hFile = CreateFileA(CONFIG_FILE, GENERIC_READ, FILE_SHARE_READ, NULL,
+       OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE) return;
+
+    DWORD fileSize = GetFileSize(hFile, NULL);
+    if (fileSize == INVALID_FILE_SIZE) { CloseHandle(hFile); return; }
+
+    std::string buffer;
+    buffer.resize(fileSize);
+    DWORD bytesRead;
+
+    if (ReadFile(hFile, &buffer[0], fileSize, &bytesRead, NULL)) {
+        std::istringstream iss(buffer);
+        ParseData(iss);
+    }
+
+    CloseHandle(hFile);
+}
+
+
+void SaveConfigWinAPI(HWND hwnd) {
+    RECT windowRect;
+    GetWindowRect(hwnd, &windowRect);
+
+    std::ostringstream file;
+    SaveData(windowRect, file);
+    std::string data = file.str();
+
+    HANDLE hFile = CreateFileA(CONFIG_FILE, GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile != INVALID_HANDLE_VALUE) {
+        DWORD bytesWritten;
+        WriteFile(hFile, data.c_str(), (DWORD)data.size(), &bytesWritten, NULL);
+        CloseHandle(hFile);
+    }
+}
+
+ConfigMethod currentMethod = MAPPING;
+
+void LoadConfig() {
+    switch (currentMethod) {
+        case MAPPING: LoadConfigMapping(); break;
+        case CFILE: LoadConfigFile();  break;
+        case STREAM: LoadConfigStream(); break;
+        case WinAPI:  LoadConfigWinAPI();  break;
+    }
+}
+
+void SaveConfig(HWND hwnd) {
+    switch (currentMethod) {
+        case MAPPING: SaveConfigMapping(hwnd); break;
+        case CFILE: SaveConfigFile(hwnd);  break;
+        case STREAM: SaveConfigStream(hwnd); break;
+        case WinAPI:  SaveConfigWinAPI(hwnd);  break;
+    }
+}
