@@ -28,5 +28,6 @@ void LoadConfigFile();
 void SaveConfigFile(HWND hwnd);
 void LoadConfigWinAPI();
 void SaveConfigWinAPI(HWND hwnd);
+void LoadConfigMappingBench();
 
 #endif

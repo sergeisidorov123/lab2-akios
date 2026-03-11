@@ -242,4 +242,38 @@ void SaveConfig(HWND hwnd) {
     }
 }
 
+void ParseDataFromMemory(const char* data, DWORD size) {
+    std::string_view content(data, size);
+
+    std::istringstream iss((std::string)content);
+    ParseData(iss);
+}
+
+void LoadConfigMappingBench() {
+    HANDLE hFile = CreateFileA(CURRENT_FILE.c_str(), GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (hFile == INVALID_HANDLE_VALUE) return;
+
+    DWORD fileSize = GetFileSize(hFile, NULL);
+    if (fileSize == 0) {
+        CloseHandle(hFile);
+        return;
+    }
+
+    HANDLE hMapping = CreateFileMapping(hFile, NULL, PAGE_READONLY, 0, 0, NULL);
+    if (hMapping == NULL) {
+        CloseHandle(hFile);
+        return;
+    }
+
+
+    char* pData = (char*)MapViewOfFile(hMapping, FILE_MAP_READ, 0, 0, 0);
+    if (pData != NULL) {
+        ParseDataFromMemory(pData, fileSize);
+
+        UnmapViewOfFile(pData);
+    }
+
+    CloseHandle(hMapping);
+    CloseHandle(hFile);
+}
 

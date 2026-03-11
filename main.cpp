@@ -29,10 +29,10 @@ void RunBenchmark() {
         std::vector<double> times;
         std::cout << "\n--- Method " << method << " ---" << std::endl;
 
-        for (int i = 1; i <= 20; ++i) {
+        for (int i = 1; i <= 200; ++i) {
             auto start = std::chrono::high_resolution_clock::now();
 
-            if (method == 1) LoadConfigMapping();
+            if (method == 1) LoadConfigMappingBench();
             else if (method == 2) LoadConfigFile();
             else if (method == 3) LoadConfigStream();
             else if (method == 4) LoadConfigWinAPI();
@@ -41,11 +41,11 @@ void RunBenchmark() {
             std::chrono::duration<double, std::milli> elapsed = end - start;
 
             times.push_back(elapsed.count());
-            std::cout << "Iteration " << i << ": " << elapsed.count() << " ms" << std::endl;
+            //std::cout << "Iteration " << i << ": " << elapsed.count() << " ms" << std::endl;
         }
 
         double sum = std::accumulate(times.begin(), times.end(), 0.0);
-        std::cout << ">> AVERAGE for Method " << method << ": " << sum / 20.0 << " ms" << std::endl;
+        std::cout << ">> AVERAGE for Method " << method << ": " << sum / 200.0 << " ms" << std::endl;
     }
     CURRENT_FILE = originalFile;
 }
