@@ -11,5 +11,7 @@ extern int WINDOW_HEIGHT_CONFIG;
 
 void LoadConfigStream();
 void SaveConfigStream(HWND hwnd);
+void LoadConfigMapping();
+void SaveConfigMapping(HWND hwnd);
 
 #endif

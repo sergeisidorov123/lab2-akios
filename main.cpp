@@ -5,19 +5,20 @@
 
 const int WINDOW_WIDTH = 320;
 const int WINDOW_HEIGHT = 240;
+const int MAX_CELL_SIZE = 100;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int CmdShow) {
     // Загружаем конфиг
-    LoadConfigStream();
+    LoadConfigMapping();
 
     // Обработка аргументов командной строки
     int argc = __argc;
     char** argv = __argv;
     if (argc > 1) {
         int cellSize = atoi(argv[1]);
-        if (cellSize >= MIN_CELL_SIZE) {
+        if (cellSize >= MIN_CELL_SIZE & cellSize <= MAX_CELL_SIZE) {
             CELL_SIZE = cellSize;
         }
     }
