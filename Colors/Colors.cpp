@@ -1,4 +1,6 @@
 #include "Colors.h"
+#include "../main.h"
+#include "../WindowsProcedures/WindowProc.h"
 
 // Цвет сетки по умолчанию красный
 int GRID_COLOR_R = 255;
@@ -24,24 +26,27 @@ COLORREF GetRandomColor() {
 
 // Изменение цвета сетки
 void UpdateGridColor(int delta) {
-    GRID_COLOR_R = (GRID_COLOR_R + delta + 256) % 256;
-    GRID_COLOR_G = (GRID_COLOR_G + delta + 256) % 256;
-    GRID_COLOR_B = (GRID_COLOR_B + delta + 256) % 256;
+    sharedData->GRID_COLOR_R = (sharedData->GRID_COLOR_R + delta) % 256;
+    sharedData->GRID_COLOR_G = (sharedData->GRID_COLOR_G + delta) % 256;
+    sharedData->GRID_COLOR_B = (sharedData->GRID_COLOR_B + delta) % 256;
 }
 
 
 // Кисть фона
 void InitBackgroundBrush(HWND hwnd) {
-    hBackgroundBrush = CreateSolidBrush(BACKGROUND_COLOR);
+    if (sharedData->backgroundColor == 0) {
+        sharedData->backgroundColor = RGB(0, 0, 255);
+    }
+
+    hBackgroundBrush = CreateSolidBrush(sharedData->backgroundColor);
     SetClassLongPtrA(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBackgroundBrush);
 }
 
-// Обновление кисти фона
 void UpdateBackgroundBrush(HWND hwnd) {
+    if (!sharedData) return;
     if (hBackgroundBrush) DeleteObject(hBackgroundBrush);
-    hBackgroundBrush = CreateSolidBrush(BACKGROUND_COLOR);
+    hBackgroundBrush = CreateSolidBrush(sharedData->backgroundColor);
     SetClassLongPtrA(hwnd, GCLP_HBRBACKGROUND, (LONG_PTR)hBackgroundBrush);
-    InvalidateRect(hwnd, NULL, TRUE);
 }
 
 

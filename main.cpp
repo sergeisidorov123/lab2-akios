@@ -8,10 +8,14 @@
 #include <chrono>
 #include <numeric>
 #include <fstream>
+#include "main.h"
+
 
 const int WINDOW_WIDTH = 320;
 const int WINDOW_HEIGHT = 240;
 const int MAX_CELL_SIZE = 100;
+
+std::vector<HWND> Windows;
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
@@ -50,8 +54,37 @@ void RunBenchmark() {
     CURRENT_FILE = originalFile;
 }
 
+HANDLE hMapFile = NULL;
+SharedData* sharedData = nullptr;
+HANDLE hMutex = NULL;
+
+void InitSharedMemory() {
+    hMapFile = CreateFileMappingA(
+        INVALID_HANDLE_VALUE,
+        NULL,
+        PAGE_READWRITE,
+        0, sizeof(SharedData),
+        "Local\\MyGameSharedMem"
+    );
+
+    bool isFirstProcess = (GetLastError() != ERROR_ALREADY_EXISTS);
+
+    sharedData = (SharedData*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(SharedData));
+
+    if (sharedData && isFirstProcess) {
+        memset(sharedData, 0, sizeof(SharedData));
+
+        sharedData->GRID_COLOR_R = 0;
+        sharedData->GRID_COLOR_G = 0;
+        sharedData->GRID_COLOR_B = 0;
+    }
+
+    hMutex = CreateMutexA(NULL, FALSE, "Local\\MyGameMutex");
+}
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int CmdShow) {
     LoadConfig();
+
+    InitSharedMemory();
     bool runBench = false;
     int argc = __argc;
     char** argv = __argv;
@@ -100,6 +133,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int 
 
 
 
+
+
     if (runBench) {
         AllocConsole();
         freopen("CONOUT$", "w", stdout);
@@ -124,16 +159,31 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int 
         MessageBoxA(NULL, "Failed to register window class!", "Error", MB_OK);
         return -1;
     }
+    WaitForSingleObject(hMutex, INFINITE);
+    int currentIdx = sharedData->WindowsCreated;
+    sharedData->WindowsCreated++;
+    ReleaseMutex(hMutex);
 
+    int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+    int windowW = WINDOW_WIDTH_CONFIG;
+    int windowH = WINDOW_HEIGHT_CONFIG;
+
+    int cols = screenWidth / windowW;
+
+
+    int x = (currentIdx % cols) * windowW;
+    int y = (currentIdx / cols) * windowH;
     // Создание окна
     HWND hwnd = CreateWindowA(
         "MainWindowClass",
-        "Grid Application",
+        std::format("Window {}", currentIdx + 1).c_str(),
         WS_OVERLAPPEDWINDOW | WS_VISIBLE,
-        CW_USEDEFAULT, CW_USEDEFAULT,
-        WINDOW_WIDTH_CONFIG, WINDOW_HEIGHT_CONFIG,
+        x, y,
+        windowW, windowH,
         NULL, NULL, hInstance, NULL
     );
+    Windows.push_back(hwnd);
+
 
     if (!hwnd) {
         MessageBoxA(NULL, "Failed to create window!", "Error", MB_OK);
@@ -152,5 +202,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int 
 
     // Очистка
     CleanupBackgroundBrush();
+    UnmapViewOfFile(sharedData);
+    CloseHandle(hMapFile);
+    CloseHandle(hMutex);
     return 0;
 }

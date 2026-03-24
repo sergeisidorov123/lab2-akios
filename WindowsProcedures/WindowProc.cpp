@@ -1,8 +1,15 @@
 #include "WindowProc.h"
+
+#include <format>
+#include <iostream>
+
 #include "../Grid/Grid.h"
 #include "../Colors/Colors.h"
 #include "../Config/Config.h"
 #include <shellapi.h>
+#include "../main.h"
+int win_count = 1;
+UINT WM_UPDATE_GRID = RegisterWindowMessageA("Update");
 
 LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
     switch (uMsg) {
@@ -10,7 +17,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         // Обработка изменения размера окна
         case WM_SIZE: {
             // При изменении размера окна пересчитываем сетку
-            RecalculateGrid(hwnd);
+            //RecalculateGrid(hwnd);
             InvalidateRect(hwnd, NULL, TRUE);
             return 0;
         }
@@ -24,19 +31,27 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             RECT clientRect;
             GetClientRect(hwnd, &clientRect);
 
+
+
             int cellWidth = clientRect.right / GRID_SIZE_X;
             int cellHeight = clientRect.bottom / GRID_SIZE_Y;
 
             int col = xPos / cellWidth;
             int row = yPos / cellHeight;
 
-            if (row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
-                AddCircle(row, col);
-                InvalidateRect(hwnd, NULL, TRUE);
+            if (hMutex) {
+                WaitForSingleObject(hMutex, INFINITE);
+
+                if (row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
+                    AddCircle(row, col);
+                }
+
+                ReleaseMutex(hMutex);
             }
+
+            PostMessage(HWND_BROADCAST, WM_UPDATE_GRID, 0, 0);
             return 0;
         }
-
         case WM_RBUTTONDOWN: {
             // Правый клик - рисование крестика
             int xPos = LOWORD(lParam);
@@ -45,25 +60,40 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             RECT clientRect;
             GetClientRect(hwnd, &clientRect);
 
+
             int cellWidth = clientRect.right / GRID_SIZE_X;
             int cellHeight = clientRect.bottom / GRID_SIZE_Y;
 
             int col = xPos / cellWidth;
             int row = yPos / cellHeight;
 
-            if (row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
-                AddCross(row, col);
-                InvalidateRect(hwnd, NULL, TRUE);
+            if (hMutex) {
+                WaitForSingleObject(hMutex, INFINITE);
+
+                if (row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
+                    AddCross(row, col);
+                }
+
+                ReleaseMutex(hMutex);
             }
+
+            PostMessage(HWND_BROADCAST, WM_UPDATE_GRID, 0, 0);
             return 0;
         }
 
         case WM_MOUSEWHEEL: {
             // Колесико мыши - изменение цвета сетки
-            int delta = GET_WHEEL_DELTA_WPARAM(wParam);
-            int steps = delta / WHEEL_DELTA;
-            UpdateGridColor(steps * 16);
-            InvalidateRect(hwnd, NULL, TRUE);
+            if (hMutex) {
+                WaitForSingleObject(hMutex, INFINITE);
+
+                int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+                int steps = delta / WHEEL_DELTA;
+                UpdateGridColor(steps * 16);
+
+                ReleaseMutex(hMutex);
+            }
+
+            PostMessage(HWND_BROADCAST, WM_UPDATE_GRID, 0, 0);
             return 0;
         }
 
@@ -71,7 +101,6 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         case WM_KEYDOWN: {
             bool ctrlPressed = (GetKeyState(VK_CONTROL) & 0x8000) != 0;
             bool shiftPressed = (GetKeyState(VK_SHIFT) & 0x8000) != 0;
-
             if (ctrlPressed && wParam == 'Q') {
                 DestroyWindow(hwnd);
             }
@@ -79,12 +108,45 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
                 ShellExecuteA(NULL, "open", "notepad.exe", NULL, NULL, SW_SHOWNORMAL);
             }
             else if (wParam == VK_RETURN) {
-                BACKGROUND_COLOR = GetRandomColor();
-                UpdateBackgroundBrush(hwnd);
+                if (hMutex) {
+                    WaitForSingleObject(hMutex, INFINITE);
+
+                    sharedData->backgroundColor = GetRandomColor();
+                    UpdateBackgroundBrush(hwnd);
+
+                    ReleaseMutex(hMutex);
+                }
+                PostMessage(HWND_BROADCAST, WM_UPDATE_GRID, 0, 0);
+            }
+            else if (ctrlPressed && wParam == 'N') {
+                WaitForSingleObject(hMutex, INFINITE);
+                int currentIdx = sharedData->WindowsCreated;
+                sharedData->WindowsCreated++;
+                ReleaseMutex(hMutex);
+
+                int screenWidth = GetSystemMetrics(SM_CXSCREEN);
+                int windowW = WINDOW_WIDTH_CONFIG;
+                int windowH = WINDOW_HEIGHT_CONFIG;
+
+                int cols = screenWidth / windowW;
+
+
+                int x = (currentIdx % cols) * windowW;
+                int y = (currentIdx / cols) * windowH;
+
+                HWND newHwnd = CreateWindowA(
+                    "MainWindowClass",
+                    std::format("Window {}", currentIdx + 1).c_str(),
+                    WS_OVERLAPPEDWINDOW | WS_VISIBLE,
+                    x, y,
+                    windowW, windowH,
+                    NULL, NULL, GetModuleHandle(NULL), NULL
+                );
+                Windows.push_back(newHwnd);
+                InitBackgroundBrush(newHwnd);
             }
             return 0;
         }
-
         // Обработка рисовки
         case WM_PAINT: {
             PAINTSTRUCT ps;
@@ -101,7 +163,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
             int cellHeight = height / GRID_SIZE_Y;
 
             // Рисуем сетку текущим цветом
-            HPEN gridPen = CreatePen(PS_SOLID, 1, RGB(GRID_COLOR_R, GRID_COLOR_G, GRID_COLOR_B));
+            HPEN gridPen = CreatePen(PS_SOLID, 1, RGB(sharedData->GRID_COLOR_R,
+                                          sharedData->GRID_COLOR_G,
+                                          sharedData->GRID_COLOR_B));
             HPEN oldPen = (HPEN)SelectObject(hdc, gridPen);
 
             // Вертикальные линии
@@ -138,14 +202,42 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
         }
 
         // Обработка выхода
-        case WM_DESTROY:
-            // Сохраняем конфигурацию перед выходом
-            SaveConfig(hwnd);
-            PostQuitMessage(0);
+        case WM_DESTROY: {
+            // Ищем текущее окно в векторе и удаляем его
+            for (auto it = Windows.begin(); it != Windows.end(); ++it) {
+                if (*it == hwnd) {
+                    Windows.erase(it);
+                    break;
+                }
+            }
+
+            if (Windows.empty()) {
+                SaveConfig(hwnd);
+                PostQuitMessage(0);
+            }
+            break;
+        }
+        case WM_GETMINMAXINFO: {
+            LPMINMAXINFO lpMMI = (LPMINMAXINFO)lParam;
+
+            lpMMI->ptMinTrackSize.x = WINDOW_WIDTH_CONFIG;
+            lpMMI->ptMinTrackSize.y = WINDOW_HEIGHT_CONFIG;
+
+            lpMMI->ptMaxTrackSize.x = WINDOW_WIDTH_CONFIG;
+            lpMMI->ptMaxTrackSize.y = WINDOW_HEIGHT_CONFIG;
+
             return 0;
+        }
+
 
         // По умолчанию
         default:
+            if (uMsg == WM_UPDATE_GRID) {
+                UpdateBackgroundBrush(hwnd);
+                InvalidateRect(hwnd, NULL, TRUE);
+                return 0;
+            }
             return DefWindowProcA(hwnd, uMsg, wParam, lParam);
     }
+    return 0;
 }

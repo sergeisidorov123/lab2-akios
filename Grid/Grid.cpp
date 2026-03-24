@@ -1,69 +1,72 @@
 #include "Grid.h"
 #include <algorithm>
+#include "../Colors/Colors.h"
+#include "../main.h"
 
 int CELL_SIZE = 20;
-int GRID_SIZE_X = 0;
-int GRID_SIZE_Y = 0;
-std::vector<Cell> cells;
+int GRID_SIZE_X = 10;
+int GRID_SIZE_Y = 10;
+
+Cell cells[MAX_CELLS];
 
 // Цвета фигур
 const COLORREF CIRCLE_COLOR = RGB(255, 255, 0);
 const COLORREF CROSS_COLOR = RGB(0, 255, 0);
 
 // Функция для изменения размера сетки (полная перезапись)
-void ResizeGrid(int newGridSizeX, int newGridSizeY) {
-    GRID_SIZE_X = newGridSizeX;
-    GRID_SIZE_Y = newGridSizeY;
-    cells.resize(GRID_SIZE_X * GRID_SIZE_Y);
-
-    for (int i = 0; i < GRID_SIZE_X * GRID_SIZE_Y; i++) {
-        cells[i].hasCircle = false;
-        cells[i].hasCross = false;
-    }
-}
+// void ResizeGrid(int newGridSizeX, int newGridSizeY) {
+//     GRID_SIZE_X = newGridSizeX;
+//     GRID_SIZE_Y = newGridSizeY;
+//     cells.resize(GRID_SIZE_X * GRID_SIZE_Y);
+//
+//     for (int i = 0; i < GRID_SIZE_X * GRID_SIZE_Y; i++) {
+//         cells[i].hasCircle = false;
+//         cells[i].hasCross = false;
+//     }
+// }
 
 // Функция для пересчета размера сетки на основе размера окна
-void RecalculateGrid(HWND hwnd) {
-    RECT clientRect;
-    GetClientRect(hwnd, &clientRect);
-
-    int newGridSizeX = clientRect.right / CELL_SIZE;
-    int newGridSizeY = clientRect.bottom / CELL_SIZE;
-
-    if (newGridSizeX < 1) newGridSizeX = 1;
-    if (newGridSizeY < 1) newGridSizeY = 1;
-
-    if (newGridSizeX != GRID_SIZE_X || newGridSizeY != GRID_SIZE_Y) {
-        int oldGridSizeX = GRID_SIZE_X;
-        int oldGridSizeY = GRID_SIZE_Y;
-        std::vector<Cell> oldCells = cells;
-
-        GRID_SIZE_X = newGridSizeX;
-        GRID_SIZE_Y = newGridSizeY;
-
-        cells.clear();
-        cells.resize(GRID_SIZE_X * GRID_SIZE_Y);
-
-        for (int i = 0; i < GRID_SIZE_X * GRID_SIZE_Y; i++) {
-            cells[i].hasCircle = false;
-            cells[i].hasCross = false;
-        }
-
-        if (oldGridSizeX > 0 && oldGridSizeY > 0 && !oldCells.empty()) {
-            for (int row = 0; row < std::min(oldGridSizeY, GRID_SIZE_Y); row++) {
-                for (int col = 0; col < std::min(oldGridSizeX, GRID_SIZE_X); col++) {
-                    int oldIndex = row * oldGridSizeX + col;
-                    int newIndex = row * GRID_SIZE_X + col;
-
-                    if (oldIndex < oldCells.size() && newIndex < cells.size()) {
-                        cells[newIndex].hasCircle = oldCells[oldIndex].hasCircle;
-                        cells[newIndex].hasCross = oldCells[oldIndex].hasCross;
-                    }
-                }
-            }
-        }
-    }
-}
+// void RecalculateGrid(HWND hwnd) {
+//     RECT clientRect;
+//     GetClientRect(hwnd, &clientRect);
+//
+//     int newGridSizeX = clientRect.right / CELL_SIZE;
+//     int newGridSizeY = clientRect.bottom / CELL_SIZE;
+//
+//     if (newGridSizeX < 1) newGridSizeX = 1;
+//     if (newGridSizeY < 1) newGridSizeY = 1;
+//
+//     if (newGridSizeX != GRID_SIZE_X || newGridSizeY != GRID_SIZE_Y) {
+//         int oldGridSizeX = GRID_SIZE_X;
+//         int oldGridSizeY = GRID_SIZE_Y;
+//         std::vector<Cell> oldCells = cells;
+//
+//         GRID_SIZE_X = newGridSizeX;
+//         GRID_SIZE_Y = newGridSizeY;
+//
+//         cells.clear();
+//         cells.resize(GRID_SIZE_X * GRID_SIZE_Y);
+//
+//         for (int i = 0; i < GRID_SIZE_X * GRID_SIZE_Y; i++) {
+//             cells[i].hasCircle = false;
+//             cells[i].hasCross = false;
+//         }
+//
+//         if (oldGridSizeX > 0 && oldGridSizeY > 0 && !oldCells.empty()) {
+//             for (int row = 0; row < std::min(oldGridSizeY, GRID_SIZE_Y); row++) {
+//                 for (int col = 0; col < std::min(oldGridSizeX, GRID_SIZE_X); col++) {
+//                     int oldIndex = row * oldGridSizeX + col;
+//                     int newIndex = row * GRID_SIZE_X + col;
+//
+//                     if (oldIndex < oldCells.size() && newIndex < cells.size()) {
+//                         cells[newIndex].hasCircle = oldCells[oldIndex].hasCircle;
+//                         cells[newIndex].hasCross = oldCells[oldIndex].hasCross;
+//                     }
+//                 }
+//             }
+//         }
+//     }
+// }
 
 // Получение индекса в массиве по координатам ячейки
 int GetCellIndex(int row, int col) {
@@ -72,36 +75,33 @@ int GetCellIndex(int row, int col) {
 
 // Добавление круга в ячейку
 void AddCircle(int row, int col) {
-    if (row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
-        int index = GetCellIndex(row, col);
-        cells[index].hasCircle = true;
-        cells[index].hasCross = false;
+    if (sharedData && row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
+        sharedData->cells[row * GRID_SIZE_X + col].hasCircle = true;
+        sharedData->cells[row * GRID_SIZE_X + col].hasCross = false;
     }
 }
 
 // Добавление крестика в ячейку
 void AddCross(int row, int col) {
-    if (row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
-        int index = GetCellIndex(row, col);
-        cells[index].hasCross = true;
-        cells[index].hasCircle = false;
+    if (sharedData && row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
+        sharedData->cells[row * GRID_SIZE_X + col].hasCircle = false;
+        sharedData->cells[row * GRID_SIZE_X + col].hasCross = true;
     }
 }
 
+
 // Проверка наличия круга в ячейке
 bool HasCircle(int row, int col) {
-    if (row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
-        int index = GetCellIndex(row, col);
-        return cells[index].hasCircle;
+    if (sharedData && row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
+        return sharedData->cells[row * GRID_SIZE_X + col].hasCircle;
     }
     return false;
 }
 
 // Проверка наличия крестика в ячейке
 bool HasCross(int row, int col) {
-    if (row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
-        int index = GetCellIndex(row, col);
-        return cells[index].hasCross;
+    if (sharedData && row >= 0 && row < GRID_SIZE_Y && col >= 0 && col < GRID_SIZE_X) {
+        return sharedData->cells[row * GRID_SIZE_X + col].hasCross;
     }
     return false;
 }
@@ -146,9 +146,9 @@ void DrawCrossInCell(HDC hdc, int row, int col, int cellWidth, int cellHeight) {
 }
 
 // Очистка всей сетки
-void ClearGrid() {
-    for (int i = 0; i < cells.size(); i++) {
-        cells[i].hasCircle = false;
-        cells[i].hasCross = false;
-    }
-}
+// void ClearGrid() {
+//     for (int i = 0; i < cells.size(); i++) {
+//         cells[i].hasCircle = false;
+//         cells[i].hasCross = false;
+//     }
+// }

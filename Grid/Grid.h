@@ -3,16 +3,18 @@
 
 #include <windows.h>
 #include <vector>
+const int MAX_CELLS = 5000;
 
 struct Cell {
     bool hasCircle;
     bool hasCross;
 };
 
+extern Cell cells[MAX_CELLS];
+
 extern int CELL_SIZE;
 extern int GRID_SIZE_X;
 extern int GRID_SIZE_Y;
-extern std::vector<Cell> cells;
 
 void ResizeGrid(int newGridSizeX, int newGridSizeY);
 void RecalculateGrid(HWND hwnd);

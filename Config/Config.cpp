@@ -13,6 +13,7 @@ const int DEFAULT_CELL_SIZE = 20;
 const int MAX_DEFAULT_SIZE = 100;
 int WINDOW_WIDTH_CONFIG = 320;
 int WINDOW_HEIGHT_CONFIG = 240;
+int MIN_WINDOW = 150;
 
 void ParseData(std::istream& file) {
     std::string line;
@@ -28,9 +29,11 @@ void ParseData(std::istream& file) {
         }
         else if (key == "WINDOW_WIDTH:") {
             iss >> WINDOW_WIDTH_CONFIG;
+            if (WINDOW_WIDTH_CONFIG < MIN_WINDOW) WINDOW_WIDTH_CONFIG = MIN_WINDOW;
         }
         else if (key == "WINDOW_HEIGHT:") {
             iss >> WINDOW_HEIGHT_CONFIG;
+            if (WINDOW_HEIGHT_CONFIG < MIN_WINDOW) WINDOW_HEIGHT_CONFIG = MIN_WINDOW;
         }
         else if (key == "BACKGROUND_COLOR:") {
             int r, g, b;

@@ -11,7 +11,8 @@ add_executable(lab2 main.cpp
         Config/Config.h
         Config/Config.cpp
         WindowsProcedures/WindowProc.h
-        WindowsProcedures/WindowProc.cpp)
+        WindowsProcedures/WindowProc.cpp
+        main.h)
 
 if(WIN32)
     set_target_properties(${PROJECT_NAME} PROPERTIES LINK_FLAGS "-static -static-libgcc -static-libstdc++")
