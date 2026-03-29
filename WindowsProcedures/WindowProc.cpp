@@ -88,6 +88,7 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 int delta = GET_WHEEL_DELTA_WPARAM(wParam);
                 int steps = delta / WHEEL_DELTA;
+                steps = std::abs(steps);
                 UpdateGridColor(steps * 16);
 
                 ReleaseMutex(hMutex);
@@ -133,6 +134,9 @@ LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam) 
 
                 int x = (currentIdx % cols) * windowW;
                 int y = (currentIdx / cols) * windowH;
+
+                int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+                y %= (screenHeight - windowH);
 
                 HWND newHwnd = CreateWindowA(
                     "MainWindowClass",

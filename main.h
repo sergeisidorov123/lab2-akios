@@ -10,5 +10,6 @@ extern std::vector<HWND> Windows;
 extern HANDLE hMapFile;
 extern SharedData* sharedData;
 extern HANDLE hMutex;
+extern bool isFirstProcess;
 
 #endif

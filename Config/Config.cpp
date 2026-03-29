@@ -5,6 +5,7 @@
 #include <string>
 #include <sstream>
 #include <windows.h>
+#include "../main.h"
 
 std::string CURRENT_FILE = "config.txt";
 const char* BENCH_FILE = "bench_test.txt";
@@ -38,10 +39,17 @@ void ParseData(std::istream& file) {
         else if (key == "BACKGROUND_COLOR:") {
             int r, g, b;
             iss >> r >> g >> b;
-            BACKGROUND_COLOR = RGB(r, g, b);
+            if (isFirstProcess) {
+                sharedData->backgroundColor = RGB(r, g, b);
+            }
         }
         else if (key == "GRID_COLOR:") {
             iss >> GRID_COLOR_R >> GRID_COLOR_G >> GRID_COLOR_B;
+            if (isFirstProcess) {
+                sharedData->GRID_COLOR_R = GRID_COLOR_R;
+                sharedData->GRID_COLOR_G = GRID_COLOR_G;
+                sharedData->GRID_COLOR_B = GRID_COLOR_B;
+            }
         }
     }
 }
@@ -51,13 +59,13 @@ void SaveData(RECT windowRect, std::ostream& file) {
     file << "WINDOW_WIDTH: " << (windowRect.right - windowRect.left) << std::endl;
     file << "WINDOW_HEIGHT: " << (windowRect.bottom - windowRect.top) << std::endl;
     file << "BACKGROUND_COLOR: "
-         << (int)GetRValue(BACKGROUND_COLOR) << " "
-         << (int)GetGValue(BACKGROUND_COLOR) << " "
-         << (int)GetBValue(BACKGROUND_COLOR) << std::endl;
+         << (int)GetRValue(sharedData->backgroundColor) << " "
+         << (int)GetGValue(sharedData->backgroundColor) << " "
+         << (int)GetBValue(sharedData->backgroundColor) << std::endl;
     file << "GRID_COLOR: "
-         << GRID_COLOR_R << " "
-         << GRID_COLOR_G << " "
-         << GRID_COLOR_B << std::endl;
+         << sharedData->GRID_COLOR_R << " "
+         << sharedData->GRID_COLOR_G << " "
+         << sharedData->GRID_COLOR_B << std::endl;
 }
 // 1 Вариант
 

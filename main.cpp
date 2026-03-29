@@ -58,16 +58,18 @@ HANDLE hMapFile = NULL;
 SharedData* sharedData = nullptr;
 HANDLE hMutex = NULL;
 
+bool isFirstProcess = false;
+
 void InitSharedMemory() {
     hMapFile = CreateFileMappingA(
         INVALID_HANDLE_VALUE,
         NULL,
         PAGE_READWRITE,
         0, sizeof(SharedData),
-        "Local\\MyGameSharedMem"
+        "Local\\SharedMem"
     );
 
-    bool isFirstProcess = (GetLastError() != ERROR_ALREADY_EXISTS);
+    isFirstProcess = (GetLastError() != ERROR_ALREADY_EXISTS);
 
     sharedData = (SharedData*)MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, sizeof(SharedData));
 
@@ -79,12 +81,12 @@ void InitSharedMemory() {
         sharedData->GRID_COLOR_B = 0;
     }
 
-    hMutex = CreateMutexA(NULL, FALSE, "Local\\MyGameMutex");
+    hMutex = CreateMutexA(NULL, FALSE, "Local\\Mutex");
 }
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int CmdShow) {
-    LoadConfig();
 
     InitSharedMemory();
+    LoadConfig();
     bool runBench = false;
     int argc = __argc;
     char** argv = __argv;
@@ -132,9 +134,6 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int 
     std::cout << "Cell size:" << CELL_SIZE << std::endl;
 
 
-
-
-
     if (runBench) {
         AllocConsole();
         freopen("CONOUT$", "w", stdout);
@@ -173,6 +172,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PSTR args, int 
 
     int x = (currentIdx % cols) * windowW;
     int y = (currentIdx / cols) * windowH;
+
+    int screenHeight = GetSystemMetrics(SM_CYSCREEN);
+    y %= (screenHeight - windowH);
+
     // Создание окна
     HWND hwnd = CreateWindowA(
         "MainWindowClass",
